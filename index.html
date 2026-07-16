@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lavanya Pasricha — Landing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Shrikhand&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141414;
+    --paper:#ffffff;
+    --grid-line:#e9e9ec;
+    --maroon:#7a1638;
+    --maroon-dark:#5c1029;
+    --select-blue:#3b82f6;
+    --select-blue-soft:rgba(59,130,246,.16);
+    --muted:#6a6a70;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{ height:100%; margin:0; }
+
+  body{
+    font-family:'Caveat', ui-serif, serif;
+    color:var(--ink);
+  }
+
+  .hero{
+    position:relative;
+    min-height:100vh;
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+      var(--paper);
+    overflow:hidden;
+  }
+
+  .menu-label{
+    position:absolute; left:5%; top:6%;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:10px 16px;
+    font-family:'Shrikhand', cursive;
+    font-weight:400; font-style:normal;
+    text-transform:uppercase;
+    font-size:20px;
+    opacity:0;
+    animation: fadeSlide .5s ease-out .15s forwards;
+    cursor:pointer;
+    z-index:2;
+  }
+  .menu-label svg{
+    position:absolute;
+    left:50%; top:50%;
+    width:120px; height:70px;
+    transform:translate(-50%,-50%);
+    overflow:visible;
+    pointer-events:none;
+    z-index:-1;
+  }
+  .menu-label svg path{
+    fill:none;
+    stroke:#111;
+    stroke-width:2.5;
+    stroke-linecap:round;
+    stroke-dasharray:270;
+    stroke-dashoffset:270;
+    transition: stroke-dashoffset .55s cubic-bezier(.65,0,.35,1);
+  }
+  .menu-label:hover svg path{
+    stroke-dashoffset:0;
+  }
+
+  .icon{
+    position:absolute;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    width:110px;
+    transform:translate(-50%,-50%);
+    opacity:0;
+    transition: transform .35s cubic-bezier(.22,1,.36,1), filter .35s ease;
+  }
+  .icon .badge{ width:96px; height:96px; display:flex; align-items:center; justify-content:center;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.18)); }
+  .icon .badge img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .icon .label{ font-family:'Caveat', cursive; font-weight:700; font-style:normal; font-size:24px; text-transform:uppercase; }
+
+  .icon--projects{ left:20%; top:26%; }
+  .icon--about{    left:54%; top:16%; }
+  .icon--resume{   left:88%; top:20%; }
+  .icon--gallery{  left:19%; top:80%; }
+  .icon--contact{  left:87%; top:78%; }
+
+  .icon--projects{ animation: iconEnterFast .7s cubic-bezier(.22,1,.36,1) .35s forwards; }
+  .icon--resume{   animation: iconEnterFast .7s cubic-bezier(.22,1,.36,1) .55s forwards; }
+  .icon--about{    animation: iconEnterSlow 1.5s cubic-bezier(.16,.8,.24,1) 1.0s forwards; }
+  .icon--gallery{  animation: iconEnterSlow 1.5s cubic-bezier(.16,.8,.24,1) 1.3s forwards; }
+  .icon--contact{  animation: iconEnterSlow 1.5s cubic-bezier(.16,.8,.24,1) 1.6s forwards; }
+
+  @keyframes iconEnterFast{
+    from{ opacity:0; transform:translate(-50%,-38%) scale(.9) rotate(-3deg); }
+    to  { opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg); }
+  }
+  @keyframes iconEnterSlow{
+    from{ opacity:0; transform:translate(-50%,-18%) scale(.96); }
+    to  { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  }
+  @keyframes fadeSlide{ from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
+
+  .hero.has-hover .icon:not(.is-active){ opacity:.35; filter:grayscale(65%); }
+  .icon.is-active{ transform:translate(-50%,-50%) scale(1.1); filter: drop-shadow(0 10px 16px rgba(0,0,0,.22)); }
+
+  .icon:hover .badge{ animation: tilt .35s ease forwards; }
+  @keyframes tilt{
+    from{ transform:rotate(0deg); }
+    to{ transform:rotate(-12deg); }
+  }
+  .icon:not(:hover) .badge{ transition: transform .25s ease; }
+
+  .hero-name{
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    width:88%; text-align:center;
+  }
+  .name{
+    margin:0; font-weight:700; font-style:normal;
+    font-family:'Caveat', cursive;
+    font-size:clamp(48px, 12vw, 130px);
+    line-height:1; position:relative; display:inline-block; white-space:nowrap;
+  }
+  .name .fill{ position:relative; z-index:2; }
+  .name .sweep{
+    position:absolute; left:0; top:6%; height:88%; width:0;
+    background:var(--select-blue-soft); z-index:1;
+    animation: sweepIn .85s cubic-bezier(.65,0,.35,1) 2.0s forwards;
+  }
+  .name .handle{
+    position:absolute; top:0; bottom:0; width:2px; background:var(--select-blue);
+    opacity:0; animation: handleIn .3s ease 2.85s forwards;
+  }
+  .name .handle::before,.name .handle::after{
+    content:""; position:absolute; left:50%; transform:translateX(-50%);
+    width:8px; height:8px; background:var(--select-blue); border-radius:50%;
+  }
+  .name .handle::before{ top:-4px; }
+  .name .handle::after{ bottom:-4px; }
+  .name .handle.left{ left:-4px; }
+  .name .handle.right{ right:-4px; }
+  @keyframes sweepIn{ from{width:0;} to{width:100%;} }
+  @keyframes handleIn{ from{opacity:0;} to{opacity:1;} }
+
+  .tagline{
+    margin:14px 0 0; font-style:italic; font-weight:600;
+    font-size:clamp(12px,1.5vw,15px); color:#2b2b2b;
+    opacity:0; animation: fadeSlide .6s ease-out 3.1s forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .icon,.menu-label,.tagline,.sweep,.handle{ animation:none !important; opacity:1 !important; width:100% !important; }
+  }
+
+  /* ===================== SELECTED PROJECTS SECTION ===================== */
+  .projects-section{
+    position:relative;
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+      var(--paper);
+    padding:30px 0 30px;
+    overflow:hidden;
+  }
+
+  .projects-heading{
+    padding-left:5%;
+    margin-bottom:100px;
+  }
+  .projects-heading .line{
+    display:block;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:clamp(40px, 6.5vw, 76px);
+    line-height:1.05;
+    transform:rotate(-3deg);
+  }
+  .projects-heading .line:nth-child(2){
+    transform:rotate(-2deg);
+    margin-left:2%;
+  }
+
+  .projects-track-wrapper{
+    width:100%;
+    overflow:hidden;
+    mask-image:linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+  }
+
+  .projects-track{
+    display:flex;
+    gap:40px;
+    width:max-content;
+    will-change:transform;
+    cursor:grab;
+    touch-action:pan-y;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+  .projects-track.is-dragging{
+    cursor:grabbing;
+  }
+  .projects-track img{
+    -webkit-user-drag:none;
+    user-select:none;
+    pointer-events:none;
+  }
+
+  .project-card{
+    flex:0 0 auto;
+    width:430px;
+    background:var(--paper);
+    border:1px solid var(--grid-line);
+    border-radius:18px;
+    box-shadow:11px 10px 30px rgba(20,20,20,.12);
+  }
+
+  .project-card-top{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 22px;
+    min-height:56px;
+  }
+
+  .project-dots{
+    display:flex;
+    gap:8px;
+    z-index:2;
+  }
+  .project-dots .dot{
+    width:13px; height:13px;
+    border-radius:50%;
+    display:inline-block;
+  }
+  .project-dots .dot-close{ background:#ff5f57; }
+  .project-dots .dot-max{ background:#febc2e; }
+
+  .project-title-block{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    white-space:nowrap;
+    pointer-events:none;
+    z-index:1;
+  }
+  .project-title{
+    font-family:'SF Compact Display', 'SF Compact', system-ui, -apple-system, sans-serif;
+    font-weight:600;
+    letter-spacing:.4px;
+    font-size:14px;
+    text-transform:uppercase;
+    color:#3a3a3a;
+    line-height:1.35;
+  }
+  .project-subtitle{
+    font-family:'SF Compact Display', 'SF Compact', system-ui, -apple-system, sans-serif;
+    font-weight:400;
+    letter-spacing:.1px;
+    font-size:12px;
+    color:#9a9a9a;
+    line-height:1.35;
+  }
+
+  .open-project-btn{
+    font-family:'Georgia', ui-serif, serif;
+    font-size:13px;
+    color:#3a3a3a;
+    background:transparent;
+    border:1px solid #d8d8db;
+    border-radius:999px;
+    padding:7px 16px;
+    cursor:pointer;
+    transition: background .25s ease, color .25s ease, border-color .25s ease;
+    z-index:2;
+  }
+  .open-project-btn:hover,
+  .project-card:hover .open-project-btn{
+    background:#218BFF;
+    border-color:#218BFF;
+    color:#ffffff;
+  }
+
+  .project-image{
+    margin:0 20px 20px;
+    height:280px;
+    border-radius:14px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .project-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  /* ===================== PROJECT OVERLAY (CASE STUDY) ===================== */
+  .project-overlay{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:5vh 20px;
+
+    background:rgba(20,20,20,.55);
+    backdrop-filter:blur(10px) saturate(110%);
+    -webkit-backdrop-filter:blur(10px) saturate(110%);
+
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .35s ease, visibility 0s linear .35s;
+  }
+  .project-overlay.is-open{
+    opacity:1;
+    visibility:visible;
+    transition:opacity .35s ease, visibility 0s linear 0s;
+  }
+
+  .project-modal{
+    width:min(900px, 92vw);
+    height:88vh;
+    max-height:88vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--paper);
+    border-radius:18px;
+    box-shadow:0 30px 70px rgba(0,0,0,.35), 0 6px 20px rgba(0,0,0,.15);
+    overflow:hidden;
+
+    transform:translateY(24px) scale(.97);
+    opacity:0;
+    transition:transform .4s cubic-bezier(.22,1,.36,1), opacity .35s ease;
+  }
+  .project-overlay.is-open .project-modal{
+    transform:translateY(0) scale(1);
+    opacity:1;
+    transition-delay:.05s;
+  }
+
+  /* mac-style top chrome bar of the "window" */
+  .project-modal-top{
+    flex:0 0 auto;
+    position:relative;
+    z-index:2;
+    background:var(--paper);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 22px;
+    border-bottom:1px solid var(--grid-line);
+  }
+
+  .project-modal-dots{
+    display:flex;
+    gap:8px;
+  }
+  .project-modal-dots .dot{
+    width:13px; height:13px;
+    border-radius:50%;
+    display:inline-block;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    transition:filter .2s ease;
+  }
+  .project-modal-dots .dot-close{ background:#ff5f57; }
+  .project-modal-dots .dot-max{ background:#febc2e; }
+  .project-modal-dots .dot:hover{ filter:brightness(.85); }
+
+  .project-modal-topbar-title{
+    position:absolute;
+    left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    font-family:'SF Compact Display', 'SF Compact', system-ui, -apple-system, sans-serif;
+    font-weight:600;
+    letter-spacing:.4px;
+    font-size:14px;
+    text-transform:uppercase;
+    color:#3a3a3a;
+  }
+
+  .project-modal-close-spacer{
+    width:37px;
+  }
+
+  .view-case-study-btn{
+    font-family:'Georgia', ui-serif, serif;
+    font-size:13px;
+    color:#ffffff;
+    text-decoration:none;
+    background:#218BFF;
+    border:1px solid #218BFF;
+    border-radius:999px;
+    padding:7px 16px;
+    cursor:pointer;
+    display:inline-block;
+    transition: background .25s ease, border-color .25s ease;
+    z-index:2;
+  }
+  .view-case-study-btn:hover,
+  .view-case-study-btn:focus{
+    background:#1876e0;
+    border-color:#1876e0;
+  }
+  .view-case-study-btn.is-clicked,
+  .view-case-study-btn.is-clicked:hover{
+    background:#0f5bb8;
+    border-color:#0f5bb8;
+  }
+
+  /* scrollable inner body — ONLY this area scrolls */
+  .project-modal-body{
+    flex:1 1 auto;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding:0 0 60px;
+  }
+  .project-modal-body::-webkit-scrollbar{ width:8px; }
+  .project-modal-body::-webkit-scrollbar-thumb{ background:#d8d8db; border-radius:8px; }
+  .project-modal-body::-webkit-scrollbar-track{ background:transparent; }
+
+  .case-cover{
+    width:100%;
+    height:260px;
+    overflow:hidden;
+  }
+  .case-cover img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+
+  .case-content{
+    padding:36px 48px 10px;
+    font-family:'SF Compact Display', 'SF Compact', system-ui, -apple-system, sans-serif;
+    color:var(--ink);
+  }
+
+  .case-title{
+    margin:0 0 22px;
+    font-weight:700;
+    letter-spacing:.3px;
+    font-size:34px;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+
+  .case-meta-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+    padding-bottom:26px;
+    margin-bottom:30px;
+    border-bottom:1px solid var(--grid-line);
+  }
+  .case-meta-grid .meta-item{ text-align:left; }
+  .case-meta-grid .meta-label{
+    font-size:11px; font-weight:600; letter-spacing:.6px;
+    text-transform:uppercase; color:#9a9a9a; margin-bottom:6px;
+  }
+  .case-meta-grid .meta-value{
+    font-size:15px; color:#3a3a3a; line-height:1.5;
+  }
+
+  .case-section-heading{
+    font-weight:700;
+    letter-spacing:.4px;
+    font-size:15px;
+    text-transform:uppercase;
+    color:#218BFF;
+    margin:34px 0 14px;
+  }
+  .case-subheading{
+    font-weight:600;
+    font-size:16px;
+    color:var(--ink);
+    margin:22px 0 8px;
+  }
+  .case-para{
+    font-size:15.5px;
+    line-height:1.7;
+    color:#5c5c62;
+    margin:0 0 14px;
+    max-width:none;
+  }
+  .case-list{
+    margin:0 0 14px;
+    padding-left:20px;
+    font-size:15.5px;
+    line-height:1.7;
+    color:#5c5c62;
+  }
+  .case-list li{ margin-bottom:4px; }
+
+  .case-logo-block{
+    text-align:center;
+    margin:18px 0 24px;
+  }
+  .case-logo-block img{
+    max-width:380px;
+    width:100%;
+    height:auto;
+    margin:0 auto 14px;
+    display:block;
+  }
+  .case-logo-meta{
+    font-size:13px;
+    color:#6a6a70;
+    line-height:1.6;
+  }
+  .case-logo-meta strong{ color:var(--ink); }
+
+  .case-image-row{
+    display:flex;
+    gap:20px;
+    margin:10px 0 22px;
+  }
+  .case-image-row img{
+    flex:1 1 0;
+    width:0;
+    min-width:0;
+    height:auto;
+    border-radius:10px;
+    border:1px solid var(--grid-line);
+    background:#fafafa;
+  }
+  .case-image-row.mockups img{
+    border-radius:16px;
+    border:none;
+    box-shadow:0 8px 20px rgba(0,0,0,.12);
+  }
+
+  body.overlay-lock{
+    overflow:hidden;
+  }
+
+  /* ===================== RESUME OVERLAY ===================== */
+  .resume-modal{
+    height:auto;
+    max-height:90vh;
+  }
+  .resume-modal-body{
+    padding:28px;
+    display:flex;
+    justify-content:center;
+    background:#f2f2f4;
+  }
+  .resume-image{
+    width:100%;
+    max-width:620px;
+    aspect-ratio:210 / 297;
+    object-fit:contain;
+    display:block;
+    border-radius:6px;
+    background:#ffffff;
+    box-shadow:0 12px 34px rgba(0,0,0,.14);
+    cursor:default;
+  }
+
+  @media (max-width: 640px){
+    .case-content{ padding:24px 22px 10px; }
+    .case-title{ font-size:24px; }
+    .case-meta-grid{ grid-template-columns:repeat(2,1fr); }
+  }  /* ===================== SERVICES SECTION ===================== */
+  .services-section{
+    position:relative;
+    min-height:100vh;
+    background:
+      linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0/34px 34px,
+      var(--paper);
+    padding:30px 0 120px;
+    overflow:hidden;
+  }
+
+  .services-heading{
+    padding-left:5%;
+    margin-bottom:60px;
+    position:relative;
+  }
+  .services-heading .line{
+    display:inline-block;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:clamp(40px, 6.5vw, 76px);
+    line-height:1;
+    transform:rotate(-3deg);
+  }
+  .services-spark{
+    position:absolute;
+    left:-6px; top:-14px;
+    width:40px; height:40px;
+    stroke:#f2b90c;
+    stroke-width:3;
+    fill:none;
+    stroke-linecap:round;
+  }
+
+  .services-doodles{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+  }
+  .services-doodles svg{
+    position:absolute;
+    stroke:#e3e3e7;
+    stroke-width:2;
+    fill:none;
+  }
+  .doodle-sparkle{ width:44px; height:44px; stroke:#dedee2; }
+  .sparkle-1{ left:3%; top:72%; }
+  .sparkle-2{ left:9%; top:80%; }
+
+  .doodle-note-lines{
+    right:2%; top:250px;
+    width:190px; height:50px;
+    stroke:#5c5c5c;
+    stroke-width:3.5;
+    transform:rotate(-4deg);
+  }
+  .doodle-note-arrow{
+    right:-1%; top:70px;
+    width:90px; height:110px;
+    stroke:#d7d7db;
+    stroke-width:2.5;
+    stroke-dasharray:1 9;
+  }
+
+  .services-layout{
+    position:relative;
+    padding:0 5%;
+    z-index:1;
+    min-height:420px;
+  }
+
+  .services-list{
+    position:relative;
+    width:min(100%, 640px);
+    background:var(--paper);
+    border:1px solid var(--grid-line);
+    border-radius:12px;
+    box-shadow:0 20px 45px -22px rgba(20,20,20,.18);
+    overflow:hidden;
+  }
+
+  .service-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    padding:18px 24px;
+    cursor:pointer;
+    border-bottom:1px solid var(--grid-line);
+    transition: background .2s ease, color .2s ease;
+  }
+  .service-row:last-child{ border-bottom:none; }
+
+  .service-row .num{
+    font-family:-apple-system, BlinkMacSystemFont, 'SF Compact Text', 'Segoe UI', sans-serif;
+    font-size:14px;
+    color:#b3b3b8;
+    width:26px;
+    flex:0 0 auto;
+    transition:color .2s ease;
+  }
+  .service-row .name{
+    font-family:-apple-system, BlinkMacSystemFont, 'SF Compact Text', 'Segoe UI', sans-serif;
+    font-weight:600;
+    font-size:16px;
+    color:#1a1a1a;
+    flex:1 1 auto;
+    transition:color .2s ease;
+  }
+  .service-row .chev{
+    font-size:15px;
+    color:#9a9a9f;
+    transition: transform .2s ease, color .2s ease;
+  }
+
+  .service-row.active{
+    background:#218BFF;
+  }
+  .service-row.active .num,
+  .service-row.active .name,
+  .service-row.active .chev{
+    color:#ffffff;
+  }
+  .service-row.active .chev{ transform:translateX(4px); }
+
+  .services-desc-box{
+    position:absolute;
+    left:0; top:0;
+    width:280px;
+    background:var(--paper);
+    border-radius:10px;
+    box-shadow:0 18px 34px -14px rgba(20,20,20,.28);
+    padding:20px 22px;
+    font-family:-apple-system, BlinkMacSystemFont, 'SF Compact Text', 'Segoe UI', sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    color:#2b2b2b;
+    transition: top .2s ease;
+    z-index:2;
+    pointer-events:none;
+  }
+
+  .services-note{
+    position:absolute;
+    width:322px;
+    height:319px;
+    display:flex;
+    flex-direction:column;
+    transform:rotate(-4deg);
+    background:var(--paper);
+    border-radius:10px;
+    box-shadow:0 20px 30px -12px rgba(20,20,20,.32);
+    overflow:hidden;
+    cursor:grab;
+    user-select:none;
+    z-index:3;
+  }
+  .services-note.is-dragging{ cursor:grabbing; }
+  .services-note .note-bar{
+    flex:0 0 auto;
+    height:34px;
+    background:#f4b400;
+  }
+  .services-note .note-body{
+    flex:1 1 auto;
+    padding:18px 24px 26px;
+    font-family:'Caveat', cursive;
+    font-weight:600;
+    font-size:26px;
+    line-height:1.3;
+    color:#2b2b2b;
+  }
+
+  @media (max-width:760px){
+    .services-doodles{ display:none; }
+    .services-desc-box{ position:static; margin-top:20px; width:100%; }
+    .services-note{ position:static; margin-top:28px; width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero" id="canvas">
+
+  <div class="menu-label">
+    <svg viewBox="0 0 120 70">
+      <path d="M 62 6 C 40 3, 12 10, 8 30 C 5 46, 18 60, 40 64 C 66 68, 104 62, 112 42 C 118 26, 100 8, 70 6 C 66 5.6, 63 6.3, 62 8" />
+    </svg>
+    Menu
+  </div>
+
+  <div class="icon icon--projects" data-name="projects">
+    <div class="badge">
+      <img src="icons/projects.png" alt="Projects">
+    </div>
+    <div class="label">Projects</div>
+  </div>
+
+  <div class="icon icon--about" data-name="about">
+    <div class="badge">
+      <img src="icons/about.png" alt="About">
+    </div>
+    <div class="label">About</div>
+  </div>
+
+  <div class="icon icon--resume" data-name="resume">
+    <div class="badge">
+      <img src="icons/resume.png" alt="Resume">
+    </div>
+    <div class="label">Resume</div>
+  </div>
+
+  <div class="icon icon--gallery" data-name="gallery">
+    <div class="badge">
+      <img src="icons/gallery.png" alt="Gallery">
+    </div>
+    <div class="label">Gallery</div>
+  </div>
+
+  <div class="icon icon--contact" data-name="contact">
+    <div class="badge">
+      <img src="icons/contact.png" alt="Contact">
+    </div>
+    <div class="label">Contact</div>
+  </div>
+
+  <div class="hero-name">
+    <h1 class="name">
+      <span class="sweep"></span>
+      <span class="handle left"></span>
+      <span class="fill">LAVANYA PASRICHA</span>
+      <span class="handle right"></span>
+    </h1>
+    <p class="tagline">Designing experiences worth double-clicking.</p>
+  </div>
+
+</div>
+
+<section class="projects-section" id="projects">
+
+  <div class="projects-heading">
+    <span class="line">SELECTED</span>
+    <span class="line">PROJECTS</span>
+  </div>
+
+  <div class="projects-track-wrapper">
+    <div class="projects-track" id="projectsTrack">
+      <!-- ===================== NOVAIR ===================== -->
+      <div class="project-card"
+           data-title="NOVAIR"
+           data-subtitle="Athlete management"
+           data-image="novair images/novair.png"
+           data-behance="https://www.behance.net/gallery/YOUR-NOVAIR-PROJECT-LINK">
+        <div class="project-card-top">
+          <div class="project-dots">
+            <span class="dot dot-close"></span>
+            <span class="dot dot-max"></span>
+          </div>
+          <div class="project-title-block">
+            <div class="project-title">NOVAIR</div>
+            <div class="project-subtitle">Athlete management</div>
+          </div>
+          <button class="open-project-btn">Open Project</button>
+        </div>
+        <div class="project-image">
+          <img src="novair images/novair.png" alt="NovAir project cover">
+        </div>
+
+        <!-- Full case-study content for NOVAIR, read by the modal -->
+        <template class="project-body">
+          <div class="case-meta-grid">
+            <div class="meta-item">
+              <div class="meta-label">Industry</div>
+              <div class="meta-value">Sport-Tech</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Role</div>
+              <div class="meta-value">UX Research<br>UX/UI Design<br>Prototyping</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Team</div>
+              <div class="meta-value">Solo</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Timeline</div>
+              <div class="meta-value">6 weeks</div>
+            </div>
+          </div>
+
+          <div class="case-section-heading">Overview</div>
+          <p class="case-para">NOVAIR is a digital platform designed to <strong>empower grassroots athletes</strong> by providing access to structured training, performance insights, and verified opportunities. It bridges the gap between hidden talent and professional growth through technology-driven sports development.</p>
+
+          <div class="case-section-heading">Understanding the Problem</div>
+          <div class="case-subheading">Background</div>
+          <p class="case-para">Thousands of grassroots athletes rely on self-training due to limited access to professional coaching. While online resources are abundant, they are often generic, disconnected, and difficult to apply to individual needs. As a result, athletes struggle to:</p>
+          <ul class="case-list">
+            <li>Train without personalized guidance</li>
+            <li>Understand whether they're improving</li>
+            <li>Prevent injuries and manage recovery</li>
+            <li>Discover verified trials and competitions</li>
+            <li>Build a professional athletic profile</li>
+          </ul>
+
+          <div class="case-subheading">Problem Statement</div>
+          <p class="case-para">Grassroots athletes lack a centralized platform that supports their training, recovery, and career growth, making it difficult to progress beyond the grassroots level.</p>
+
+          <div class="case-subheading">Design Challenge</div>
+          <p class="case-para">How might we create a digital platform that helps grassroots athletes train smarter, recover better, and discover opportunities throughout their athletic journey?</p>
+
+          <div class="case-section-heading">Research &amp; Discovery</div>
+          <p class="case-para">To better understand the challenges faced by athletes and coaches, I conducted qualitative interviews and analyzed their training journeys.</p>
+
+          <div class="case-subheading">Participants</div>
+          <ul class="case-list">
+            <li>3 Grassroots Athletes</li>
+            <li>1 Professional Coach</li>
+          </ul>
+
+          <div class="case-subheading">Research Objectives</div>
+          <ul class="case-list">
+            <li>Understand current training routines</li>
+            <li>Identify barriers to athlete development</li>
+            <li>Explore coaching challenges</li>
+            <li>Discover unmet needs within the athlete ecosystem</li>
+          </ul>
+
+          <div class="case-subheading">Key Insights</div>
+          <ul class="case-list">
+            <li>Athletes rely heavily on YouTube and generic workout plans.</li>
+            <li>Recovery is often overlooked, increasing the risk of injuries.</li>
+            <li>Progress is difficult to measure without structured feedback.</li>
+            <li>Opportunities such as trials and scholarships are scattered across multiple platforms.</li>
+            <li>Coaches spend significant time manually tracking athlete performance.</li>
+          </ul>
+
+          <div class="case-section-heading">Design Opportunities</div>
+          <p class="case-para">The research revealed four opportunities that guided the product direction.</p>
+          <ul class="case-list">
+            <li>Personalized Training Guidance</li>
+            <li>Performance &amp; Recovery Tracking</li>
+            <li>Centralized Athlete Profile</li>
+            <li>Opportunity Discovery</li>
+          </ul>
+
+          <div class="case-section-heading">Brand Identity</div>
+          <div class="case-logo-block">
+            <img src="novair images/novair logo.png" alt="NOVAIR logo — Train. Track. Transform.">
+            <div class="case-logo-meta">
+              <strong>NOVAIR</strong> [ नोवैर ]<br>
+              [noh-vair] noun
+            </div>
+          </div>
+
+          <div class="case-section-heading">Low Fidelity</div>
+          <div class="case-image-row">
+            <img src="novair images/novair lowfi 1.png" alt="NOVAIR low fidelity wireframe 1">
+            <img src="novair images/novair lowfi 3.png" alt="NOVAIR low fidelity wireframe 3">
+            <img src="novair images/novair lowfi 4.png" alt="NOVAIR low fidelity wireframe 4">
+          </div>
+
+          <div class="case-section-heading">High Fidelity</div>
+          <div class="case-image-row mockups">
+            <img src="novair images/novair highfi 1.png" alt="NOVAIR high fidelity mockup 1">
+            <img src="novair images/novair highfi 2.png" alt="NOVAIR high fidelity mockup 2">
+            <img src="novair images/novair highfi 3.png" alt="NOVAIR high fidelity mockup 3">
+          </div>
+
+          <div class="case-section-heading">Outcome</div>
+          <p class="case-para">Usability testing helped validate the product while identifying opportunities for improvement.</p>
+          <div class="case-subheading">What Worked Well</div>
+          <ul class="case-list">
+            <li>Athletes found the dashboard motivating and easy to navigate.</li>
+            <li>AI coaching was engaging and valuable.</li>
+            <li>Opportunity discovery addressed a major pain point.</li>
+            <li>The overall experience felt modern and trustworthy.</li>
+          </ul>
+
+          <div class="case-section-heading">Reflection</div>
+          <p class="case-para">This project reinforced the importance of designing beyond interfaces and focusing on solving real user problems.</p>
+          <div class="case-subheading">Key Learnings</div>
+          <ul class="case-list">
+            <li>Research should shape product decisions rather than assumptions.</li>
+            <li>Simplifying complex information significantly improves usability.</li>
+            <li>Iterative testing uncovers usability issues that aren't obvious during design.</li>
+            <li>A centralized ecosystem can meaningfully support athlete development by reducing fragmentation across training, recovery, and opportunity discovery.</li>
+          </ul>
+        </template>
+      </div>
+
+      <!-- ===================== BITERIGHT ===================== -->
+      <div class="project-card"
+           data-title="BITERIGHT"
+           data-subtitle="Calorie tracking"
+           data-image="br img/b cover.png"
+           data-behance="https://www.behance.net/gallery/YOUR-BITERIGHT-PROJECT-LINK">
+        <div class="project-card-top">
+          <div class="project-dots">
+            <span class="dot dot-close"></span>
+            <span class="dot dot-max"></span>
+          </div>
+          <div class="project-title-block">
+            <div class="project-title">BITERIGHT</div>
+            <div class="project-subtitle">Calorie tracking</div>
+          </div>
+          <button class="open-project-btn">Open Project</button>
+        </div>
+        <div class="project-image">
+          <img src="br img/b cover.png" alt="BiteRight project cover">
+        </div>
+
+        <!-- Full case-study content for BITERIGHT, read by the modal -->
+        <template class="project-body">
+          <div class="case-section-heading">Understanding the Problem</div>
+
+          <div class="case-subheading">The Challenge</div>
+          <p class="case-para">Most calorie-tracking applications are built around strict consistency. Missing a meal log or breaking a streak often creates feelings of guilt and discouragement, causing users to abandon healthy habits altogether. For students, working professionals, and socially active individuals, maintaining perfect tracking every day is unrealistic.</p>
+
+          <div class="case-subheading">Key Problems</div>
+          <ul class="case-list">
+            <li>Tracking every meal feels repetitive and time-consuming.</li>
+            <li>Missing a single day often breaks motivation.</li>
+            <li>Existing apps promote strict dieting rather than sustainable habits.</li>
+            <li>Users struggle to stay consistent during travel, festivals, or busy schedules.</li>
+          </ul>
+
+          <div class="case-subheading">Design Challenge</div>
+          <p class="case-para">How might we make calorie tracking feel effortless and sustainable rather than tedious or guilt-driven?</p>
+
+          <div class="case-section-heading">Research &amp; Discovery</div>
+          <p class="case-para">To understand why users abandon calorie-tracking apps, I conducted secondary research, competitor analysis, and user behavior mapping.</p>
+
+          <div class="case-subheading">Competitor Analysis</div>
+          <p class="case-para">I evaluated leading health and fitness platforms including:</p>
+          <ul class="case-list">
+            <li>MyFitnessPal</li>
+            <li>Cronometer</li>
+            <li>HealthifyMe</li>
+            <li>Lose It!</li>
+            <li>FatSecret</li>
+          </ul>
+          <p class="case-para">The analysis revealed that most platforms focus heavily on accuracy and detailed logging, but provide limited support for maintaining motivation when users fall off track.</p>
+
+          <div class="case-section-heading">Key Insights</div>
+
+          <div class="case-subheading">Users want flexibility, not perfection.</div>
+          <p class="case-para">People wanted to eat healthier without feeling restricted by strict tracking rules.</p>
+
+          <div class="case-subheading">Missing one day often leads to quitting.</div>
+          <p class="case-para">Many users viewed broken streaks as failure, making it difficult to restart.</p>
+
+          <div class="case-subheading">Logging meals becomes exhausting over time.</div>
+          <p class="case-para">The effort required to track every meal consistently created long-term friction.</p>
+
+          <div class="case-subheading">Health goals must fit real life.</div>
+          <p class="case-para">Users wanted a system that worked during travel, workdays, celebrations, and social events.</p>
+
+          <div class="case-section-heading">User Opportunity</div>
+          <p class="case-para">The research highlighted an opportunity to redesign calorie tracking around habit sustainability instead of strict adherence.</p>
+
+          <div class="case-section-heading">Brand Identity</div>
+          <div class="case-logo-block">
+            <img src="br img/b identity.png" alt="BiteRight logo — Health, Your Way">
+            <div class="case-logo-meta">
+              <strong>Health, Your Way</strong><br>
+              The BiteRight identity was designed to feel approachable, encouraging, and judgment-free.
+            </div>
+          </div>
+
+          <div class="case-subheading">Brand Attributes</div>
+          <ul class="case-list">
+            <li>Supportive</li>
+            <li>Flexible</li>
+            <li>Positive</li>
+            <li>Accessible</li>
+            <li>Motivating</li>
+          </ul>
+
+          <div class="case-subheading">Visual Direction</div>
+          <p class="case-para">The interface combines clean layouts, friendly typography, and calming visual elements to reduce the pressure commonly associated with fitness applications.</p>
+
+          <div class="case-section-heading">Low-Fidelity Exploration</div>
+          <div class="case-image-row">
+            <img src="br img/l1.png" alt="BiteRight low fidelity wireframe 1">
+            <img src="br img/l2.png" alt="BiteRight low fidelity wireframe 2">
+            <img src="br img/l3.png" alt="BiteRight low fidelity wireframe 3">
+          </div>
+
+          <div class="case-section-heading">High-Fidelity Exploration</div>
+          <div class="case-image-row mockups">
+            <img src="br img/h1.png" alt="BiteRight high fidelity mockup 1">
+            <img src="br img/h2.png" alt="BiteRight high fidelity mockup 2">
+            <img src="br img/h3.png" alt="BiteRight high fidelity mockup 3">
+          </div>
+
+          <div class="case-section-heading">Outcome</div>
+          <p class="case-para">The final experience transformed calorie tracking from a rigid daily task into a flexible habit-building system.</p>
+
+          <div class="case-subheading">What Worked Well</div>
+          <ul class="case-list">
+            <li>Users appreciated the non-judgmental approach.</li>
+            <li>Flexible tracking reduced pressure and guilt.</li>
+            <li>Simple logging improved perceived usability.</li>
+            <li>Habit-focused features increased motivation to continue.</li>
+          </ul>
+
+          <div class="case-section-heading">Design Impact</div>
+          <p class="case-para">BiteRight encourages consistency by acknowledging that healthy lifestyles aren't built through perfection, but through sustainable daily choices.</p>
+        </template>
+      </div>
+
+      <!-- ===================== JANVAANI ===================== -->
+      <div class="project-card"
+           data-title="JANVAANI"
+           data-subtitle="Rural India project"
+           data-image="janvaani img/j cover.png"
+           data-behance="https://www.behance.net/gallery/YOUR-JANVAANI-PROJECT-LINK">
+        <div class="project-card-top">
+          <div class="project-dots">
+            <span class="dot dot-close"></span>
+            <span class="dot dot-max"></span>
+          </div>
+          <div class="project-title-block">
+            <div class="project-title">JANVAANI</div>
+            <div class="project-subtitle">Rural India project</div>
+          </div>
+          <button class="open-project-btn">Open Project</button>
+        </div>
+        <div class="project-image">
+          <img src="janvaani img/j cover.png" alt="Janvaani project cover">
+        </div>
+
+        <!-- Full case-study content for JANVAANI, read by the modal -->
+        <template class="project-body">
+          <p class="case-tagline">Empowering Voices in Rural India</p>
+          <p class="case-para">A participatory service design intervention that encourages citizen participation in Gram Sabha meetings through interactive community engagement.</p>
+
+          <div class="case-meta-grid">
+            <div class="meta-item">
+              <div class="meta-label">Industry</div>
+              <div class="meta-value">CivicTech &bull; Service Design</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Role</div>
+              <div class="meta-value">UX Research<br>Service Design</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Team</div>
+              <div class="meta-value">Lavanya<br>Manan Nangi</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">Duration</div>
+              <div class="meta-value">4 weeks</div>
+            </div>
+          </div>
+
+          <div class="case-section-heading">Overview</div>
+          <p class="case-callout">Designing participation, not just products.</p>
+          <p class="case-para">Gram Sabha meetings are essential for community decision-making, yet participation remains low due to limited awareness, social barriers, and a lack of engaging communication.</p>
+          <p class="case-para">This project reimagines how citizens interact with local governance by designing an interactive workshop experience that makes participation more accessible, collaborative, and meaningful.</p>
+
+          <div class="case-section-heading">Understanding the Problem</div>
+          <div class="case-subheading">The Challenge</div>
+          <p class="case-para">Despite directly affecting their daily lives, many villagers rarely participate in Gram Sabha meetings. Conversations with community members revealed that the issue wasn't a lack of interest — it was a lack of confidence, awareness, and accessible ways to engage.</p>
+
+          <div class="case-subheading">Design Challenge</div>
+          <p class="case-para">How might we encourage meaningful participation in Gram Sabha meetings through an engaging and inclusive community experience?</p>
+
+          <div class="case-section-heading">Research &amp; Discovery</div>
+          <p class="case-callout">Understanding the community came before designing the solution.</p>
+          <p class="case-para">Through field research, interviews, and secondary research, I explored the barriers preventing people from actively participating in village decision-making.</p>
+
+          <div class="case-image-row">
+            <img src="janvaani img/j1.jpeg" alt="Janvaani visual challenge 1">
+            <img src="janvaani img/j2.jpeg" alt="Janvaani visual challenge 2">
+            <img src="janvaani img/j3.jpeg" alt="Janvaani visual challenge 3">
+          </div>
+
+          <div class="case-subheading">Key Insights</div>
+          <ul class="case-list">
+            <li>People felt their voices wouldn't make a difference.</li>
+            <li>Women were hesitant to speak in public meetings.</li>
+            <li>Government processes felt confusing and inaccessible.</li>
+            <li>Poor communication led to low awareness of meetings and schemes.</li>
+          </ul>
+
+          <div class="case-subheading">Core Insight</div>
+          <p class="case-callout">People don't avoid participation because they don't care — they avoid it because the process feels intimidating and disconnected from their everyday lives.</p>
+
+          <div class="case-section-heading">Concept Exploration</div>
+          <p class="case-para">Rather than settling on the first idea, I explored two different approaches to encourage participation.</p>
+
+          <div class="case-subheading">Concepts</div>
+          <div class="case-image-row">
+            <img src="janvaani img/Janvaani exploration concept 1.jpeg" alt="Janvaani exploration concept 1">
+            <img src="janvaani img/Janvaani exploration concept 2.jpeg" alt="Janvaani exploration concept 2">
+          </div>
+
+          <div class="case-section-heading">Final Solution</div>
+          <div class="case-image-row mockups">
+            <img src="janvaani img/j final.png" alt="Janvaani final concept">
+          </div>
+        </template>
+      </div>
+
+      <!-- duplicate set for seamless infinite loop (aria-hidden, same data, thin bodies fine) -->
+      <div class="project-card" aria-hidden="true"
+           data-title="NOVAIR" data-subtitle="Athlete management" data-image="novair images/novair.png">
+        <div class="project-card-top">
+          <div class="project-dots"><span class="dot dot-close"></span><span class="dot dot-max"></span></div>
+          <div class="project-title-block"><div class="project-title">NOVAIR</div><div class="project-subtitle">Athlete management</div></div>
+          <button class="open-project-btn">Open Project</button>
+        </div>
+        <div class="project-image"><img src="novair images/novair.png" alt="NovAir project cover"></div>
+      </div>
+      <div class="project-card" aria-hidden="true"
+           data-title="BITERIGHT" data-subtitle="Calorie tracking" data-image="br img/b cover.png">
+        <div class="project-card-top">
+          <div class="project-dots"><span class="dot dot-close"></span><span class="dot dot-max"></span></div>
+          <div class="project-title-block"><div class="project-title">BITERIGHT</div><div class="project-subtitle">Calorie tracking</div></div>
+          <button class="open-project-btn">Open Project</button>
+        </div>
+        <div class="project-image"><img src="br img/b cover.png" alt="BiteRight project cover"></div>
+      </div>
+      <div class="project-card" aria-hidden="true"
+           data-title="JANVAANI" data-subtitle="Rural India project" data-image="janvaani img/j cover.png">
+        <div class="project-card-top">
+          <div class="project-dots"><span class="dot dot-close"></span><span class="dot dot-max"></span></div>
+          <div class="project-title-block"><div class="project-title">JANVAANI</div><div class="project-subtitle">Rural India project</div></div>
+          <button class="open-project-btn">Open Project</button>
+        </div>
+        <div class="project-image"><img src="janvaani img/j cover.png" alt="Janvaani project cover"></div>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================== SERVICES SECTION ===================== -->
+<section class="services-section" id="services">
+
+  <div class="services-doodles">
+    <svg class="doodle-sparkle sparkle-1" viewBox="0 0 40 40"><path d="M20 2 L23 17 L38 20 L23 23 L20 38 L17 23 L2 20 L17 17 Z"/></svg>
+    <svg class="doodle-sparkle sparkle-2" viewBox="0 0 40 40"><path d="M20 6 L22 18 L34 20 L22 22 L20 34 L18 22 L6 20 L18 18 Z"/></svg>
+    <svg class="doodle-note-lines" viewBox="0 0 160 46">
+      <path d="M4 16 C 20 4, 30 30, 46 18 C 62 6, 72 32, 88 20 C 104 8, 114 34, 130 22 C 140 16, 148 18, 156 14" stroke-linecap="round"/>
+    </svg>
+    <svg class="doodle-note-arrow" viewBox="0 0 90 110">
+      <path d="M84 4 C 70 34, 46 66, 18 96" stroke-linecap="round"/>
+      <path d="M18 74 L18 96 L40 96" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="services-heading">
+    <svg class="services-spark" viewBox="0 0 40 40"><path d="M20 4 L20 14 M8 12 L15 18 M32 12 L25 18" /></svg>
+    <span class="line">SERVICES</span>
+  </div>
+
+  <div class="services-layout" id="servicesLayout">
+    <div class="services-list" id="servicesList">
+      <div class="service-row" data-desc="Crafting intuitive, user-centered digital experiences that balance usability with visual appeal.">
+        <span class="num">01</span>
+        <span class="name">UI/UX Design</span>
+        <span class="chev">&rsaquo;</span>
+      </div>
+      <div class="service-row" data-desc="Uncovering user needs through research and insights that drive informed design decisions.">
+        <span class="num">02</span>
+        <span class="name">UX Research</span>
+        <span class="chev">&rsaquo;</span>
+      </div>
+      <div class="service-row" data-desc="Transforming ideas into interactive wireframes and prototypes to validate concepts early.">
+        <span class="num">03</span>
+        <span class="name">Wireframing &amp; Prototyping</span>
+        <span class="chev">&rsaquo;</span>
+      </div>
+      <div class="service-row" data-desc="Designing meaningful interactions and seamless user flows that feel natural and engaging.">
+        <span class="num">04</span>
+        <span class="name">Interaction Design</span>
+        <span class="chev">&rsaquo;</span>
+      </div>
+      <div class="service-row" data-desc="Building memorable brand identities through cohesive visuals, strategy, and storytelling.">
+        <span class="num">05</span>
+        <span class="name">Branding</span>
+        <span class="chev">&rsaquo;</span>
+      </div>
+    </div>
+
+    <div class="services-desc-box" id="servicesDescBox"></div>
+
+    <div class="services-note" id="servicesNote" style="right:2%; top:30px;">
+      <div class="note-bar"></div>
+      <div class="note-body" id="servicesNoteBody">A UI is like a joke. If you have to explain it, it's not that good.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================== PROJECT OVERLAY (single reusable window) ===================== -->
+<div class="project-overlay" id="projectOverlay">
+  <div class="project-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="project-modal-top">
+      <div class="project-modal-dots">
+        <button class="dot dot-close" id="modalCloseDot" aria-label="Close project"></button>
+        <span class="dot dot-max"></span>
+      </div>
+      <div class="project-modal-topbar-title" id="modalTopbarTitle">NOVAIR</div>
+      <a class="view-case-study-btn" id="modalCaseStudyLink" href="#" target="_blank" rel="noopener noreferrer">View Case Study</a>
+    </div>
+
+    <!-- everything below scrolls; the top bar stays fixed -->
+    <div class="project-modal-body" id="modalBody">
+      <div class="case-cover">
+        <img id="modalCoverImg" src="" alt="">
+      </div>
+      <div class="case-content">
+        <h2 class="case-title" id="modalTitle">NOVAIR</h2>
+        <div id="modalDynamic"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== RESUME OVERLAY ===================== -->
+<div class="project-overlay" id="resumeOverlay">
+  <div class="project-modal resume-modal" role="dialog" aria-modal="true" aria-labelledby="resumeModalTitle">
+    <div class="project-modal-top">
+      <div class="project-modal-dots">
+        <button class="dot dot-close" id="resumeCloseDot" aria-label="Close resume"></button>
+        <span class="dot dot-max"></span>
+      </div>
+      <div class="project-modal-topbar-title" id="resumeModalTitle">RESUME</div>
+      <div class="project-modal-close-spacer"></div>
+    </div>
+    <div class="project-modal-body resume-modal-body">
+      <img src="resume.png" alt="Lavanya Pasricha Resume" class="resume-image">
+    </div>
+  </div>
+</div>
+
+<script>
+  const canvasEl = document.getElementById('canvas');
+  const icons = Array.from(document.querySelectorAll('.icon'));
+  icons.forEach(icon => {
+    icon.addEventListener('mouseenter', () => { canvasEl.classList.add('has-hover'); icon.classList.add('is-active'); });
+    icon.addEventListener('mouseleave', () => { canvasEl.classList.remove('has-hover'); icon.classList.remove('is-active'); });
+  });
+
+  // ---------- Draggable infinite-loop project carousel ----------
+  const trackWrapper = document.querySelector('.projects-track-wrapper');
+  const track = document.getElementById('projectsTrack');
+
+  let singleSetWidth = 0;
+  let posX = 0;
+  let isDragging = false;
+  let isHovering = false;
+  let dragMoved = false;
+  let startClientX = 0;
+  let startPosX = 0;
+  let lastTimestamp = null;
+  const AUTO_SCROLL_MS_PER_SET = 36000; // same pace as the original 36s animation
+
+  function measureTrack(){
+    // the track holds two identical copies of the card set back-to-back
+    singleSetWidth = track.scrollWidth / 2;
+  }
+  window.addEventListener('load', measureTrack);
+  window.addEventListener('resize', measureTrack);
+  measureTrack();
+
+  function wrapPos(x){
+    if (singleSetWidth <= 0) return x;
+    while (x <= -singleSetWidth) x += singleSetWidth;
+    while (x > 0) x -= singleSetWidth;
+    return x;
+  }
+
+  function applyTransform(){
+    track.style.transform = `translateX(${posX}px)`;
+  }
+
+  function tick(timestamp){
+    if (lastTimestamp === null) lastTimestamp = timestamp;
+    const dt = timestamp - lastTimestamp;
+    lastTimestamp = timestamp;
+
+    if (!isDragging && !isHovering && singleSetWidth > 0){
+      const speed = singleSetWidth / AUTO_SCROLL_MS_PER_SET; // px per ms
+      posX = wrapPos(posX - speed * dt);
+      applyTransform();
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  trackWrapper.addEventListener('mouseenter', () => { isHovering = true; });
+  trackWrapper.addEventListener('mouseleave', () => { isHovering = false; });
+
+  let activePointerId = null;
+  let pressedInteractive = false;
+
+  track.addEventListener('pointerdown', (e) => {
+    // if the press started on a clickable control (button or the mac-style dots),
+    // don't arm the drag tracker at all — that click must always reach its target.
+    pressedInteractive = !!e.target.closest('.open-project-btn, .project-dots .dot');
+    if (pressedInteractive){
+      activePointerId = null;
+      return;
+    }
+    isDragging = false;
+    dragMoved = false;
+    startClientX = e.clientX;
+    startPosX = posX;
+    activePointerId = e.pointerId;
+  });
+
+  track.addEventListener('pointermove', (e) => {
+    if (pressedInteractive) return;
+    if (activePointerId === null || e.pointerId !== activePointerId) return;
+    const delta = e.clientX - startClientX;
+
+    if (!isDragging){
+      if (Math.abs(delta) > 8){
+        // threshold exceeded — this is a real drag, not a click
+        isDragging = true;
+        dragMoved = true;
+        track.classList.add('is-dragging');
+        track.setPointerCapture(e.pointerId);
+      } else {
+        return; // small movement, could still just be a click — don't hijack it yet
+      }
+    }
+
+    posX = wrapPos(startPosX + delta);
+    applyTransform();
+  });
+
+  function endDrag(){
+    if (isDragging){
+      isDragging = false;
+      track.classList.remove('is-dragging');
+    }
+    activePointerId = null;
+    pressedInteractive = false;
+  }
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+
+  // suppress the "Open Project" click only when it was actually a drag
+  // (interactive-element presses never reach here with dragMoved true, since
+  // pressedInteractive short-circuits the tracker above)
+  track.addEventListener('click', (e) => {
+    if (dragMoved && !e.target.closest('.open-project-btn, .project-dots .dot')){
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    dragMoved = false;
+  }, true);
+
+  // ---------- Project overlay logic ----------
+  const overlay = document.getElementById('projectOverlay');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalTopbarTitle = document.getElementById('modalTopbarTitle');
+  const modalCoverImg = document.getElementById('modalCoverImg');
+  const modalDynamic = document.getElementById('modalDynamic');
+  const modalBody = document.getElementById('modalBody');
+  const closeDot = document.getElementById('modalCloseDot');
+  const caseStudyLink = document.getElementById('modalCaseStudyLink');
+
+  let lastFocused = null;
+
+  function openProjectOverlay(card){
+    const title = card.dataset.title || '';
+    const image = card.dataset.image || '';
+
+    // Duplicate cards (used only to make the carousel loop seamlessly) don't carry
+    // their own case-study content or behance link — fall back to the original
+    // card with the same title so the modal is never blank.
+    let behanceUrl = card.dataset.behance;
+    let bodyTemplate = card.querySelector('template.project-body');
+
+    if (!behanceUrl || !bodyTemplate){
+      const master = title
+        ? document.querySelector('.project-card[data-title="' + CSS.escape(title) + '"]:not([aria-hidden])')
+        : null;
+      if (master){
+        if (!behanceUrl) behanceUrl = master.dataset.behance;
+        if (!bodyTemplate) bodyTemplate = master.querySelector('template.project-body');
+      }
+    }
+    behanceUrl = behanceUrl || '#';
+
+    modalTitle.textContent = title;
+    modalTopbarTitle.textContent = title;
+    modalCoverImg.src = image;
+    modalCoverImg.alt = title + ' cover';
+    modalDynamic.innerHTML = bodyTemplate ? bodyTemplate.innerHTML : '';
+
+    caseStudyLink.href = behanceUrl;
+    caseStudyLink.classList.remove('is-clicked');
+
+    modalBody.scrollTop = 0;
+
+    lastFocused = document.activeElement;
+    overlay.classList.add('is-open');
+    document.body.classList.add('overlay-lock');
+    closeDot.focus();
+  }
+
+  function closeProjectOverlay(){
+    overlay.classList.remove('is-open');
+    document.body.classList.remove('overlay-lock');
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelectorAll('.open-project-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.project-card');
+      if (card) openProjectOverlay(card);
+    });
+  });
+
+  closeDot.addEventListener('click', closeProjectOverlay);
+
+  caseStudyLink.addEventListener('click', () => {
+    caseStudyLink.classList.add('is-clicked');
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeProjectOverlay();
+  });
+
+  // ---------- Resume overlay logic ----------
+  const resumeOverlay = document.getElementById('resumeOverlay');
+  const resumeCloseDot = document.getElementById('resumeCloseDot');
+  const resumeIcon = document.querySelector('.icon--resume');
+  let resumeLastFocused = null;
+
+  function openResumeOverlay(){
+    resumeLastFocused = document.activeElement;
+    resumeOverlay.classList.add('is-open');
+    document.body.classList.add('overlay-lock');
+    resumeCloseDot.focus();
+  }
+
+  function closeResumeOverlay(){
+    resumeOverlay.classList.remove('is-open');
+    document.body.classList.remove('overlay-lock');
+    if (resumeLastFocused) resumeLastFocused.focus();
+  }
+
+  resumeIcon.addEventListener('click', openResumeOverlay);
+  resumeCloseDot.addEventListener('click', closeResumeOverlay);
+  resumeOverlay.addEventListener('click', (e) => {
+    if (e.target === resumeOverlay) closeResumeOverlay();
+  });
+
+  // Escape closes whichever overlay is currently open
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape'){
+      if (overlay.classList.contains('is-open')) closeProjectOverlay();
+      if (resumeOverlay.classList.contains('is-open')) closeResumeOverlay();
+    }
+  });
+
+  // ---------- Services: hover-to-preview description box (separate from the sticky note) ----------
+  const serviceRows = Array.from(document.querySelectorAll('.service-row'));
+  const servicesList = document.getElementById('servicesList');
+  const descBox = document.getElementById('servicesDescBox');
+  const layoutEl = document.getElementById('servicesLayout');
+
+  function positionDescBox(row){
+    const layoutRect = layoutEl.getBoundingClientRect();
+    const listRect = servicesList.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
+    descBox.style.left = (listRect.right - layoutRect.left + 24) + 'px';
+    descBox.style.top = (rowRect.top - layoutRect.top) + 'px';
+  }
+
+  function setActiveRow(row){
+    serviceRows.forEach(r => r.classList.remove('active'));
+    row.classList.add('active');
+    descBox.textContent = row.dataset.desc;
+    positionDescBox(row);
+  }
+
+  // default: first service shown active on load
+  setActiveRow(serviceRows[0]);
+
+  serviceRows.forEach(row => {
+    row.addEventListener('mouseenter', () => setActiveRow(row));
+    row.addEventListener('click', () => setActiveRow(row));
+  });
+  servicesList.addEventListener('mouseleave', () => setActiveRow(serviceRows[0]));
+
+  window.addEventListener('resize', () => {
+    const active = document.querySelector('.service-row.active') || serviceRows[0];
+    positionDescBox(active);
+  });
+
+  // draggable sticky note
+  const note = document.getElementById('servicesNote');
+  const layout = document.getElementById('servicesLayout');
+  let noteDragging = false, noteOffsetX = 0, noteOffsetY = 0;
+
+  note.addEventListener('pointerdown', (e) => {
+    const layoutRect = layout.getBoundingClientRect();
+    const noteRect = note.getBoundingClientRect();
+    // switch from right/top positioning to absolute left/top on first drag
+    note.style.right = 'auto';
+    note.style.left = (noteRect.left - layoutRect.left) + 'px';
+    note.style.top = (noteRect.top - layoutRect.top) + 'px';
+
+    noteDragging = true;
+    note.classList.add('is-dragging');
+    noteOffsetX = e.clientX - noteRect.left;
+    noteOffsetY = e.clientY - noteRect.top;
+    note.setPointerCapture(e.pointerId);
+  });
+
+  note.addEventListener('pointermove', (e) => {
+    if (!noteDragging) return;
+    const layoutRect = layout.getBoundingClientRect();
+    let x = e.clientX - layoutRect.left - noteOffsetX;
+    let y = e.clientY - layoutRect.top - noteOffsetY;
+    note.style.left = x + 'px';
+    note.style.top = y + 'px';
+  });
+
+  function endNoteDrag(){
+    noteDragging = false;
+    note.classList.remove('is-dragging');
+  }
+  note.addEventListener('pointerup', endNoteDrag);
+  note.addEventListener('pointercancel', endNoteDrag);
+</script>
+
+</body>
+</html>
