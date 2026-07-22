@@ -25,7 +25,7 @@
     --gutter-mobile:24px;
     --container-max:calc(var(--content-max) + (var(--gutter-desktop) * 2));
 
-    --space-section:70px;       /* between major sections: reduced 40% again */
+    --space-section:28px;       /* between major sections: tightened for single-flow feel */
     --space-heading:25px;       /* heading to content: reduced 40% again */
     --space-group:14px;         /* between content groups: reduced 40% again */
   }
@@ -62,12 +62,35 @@
     overflow:hidden;
   }
 
+  .grid-hover-cell{
+    position:absolute;
+    left:0; top:0;
+    width:34px; height:34px;
+    background:linear-gradient(135deg, #a78bfa, #60a5fa);
+    pointer-events:none;
+    z-index:0;
+    opacity:0;
+    will-change:transform, opacity;
+  }
+  .grid-hover-cell.is-pulsing{
+    animation:gridCellPulse .2s ease-out;
+  }
+  @keyframes gridCellPulse{
+    0%{   opacity:0; }
+    28%{  opacity:.85; }
+    100%{ opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .grid-hover-cell{ display:none; }
+  }
+
   .icon{
     position:absolute;
     display:flex; flex-direction:column; align-items:center; gap:8px;
     width:110px;
     transform:translate(-50%,-50%);
     opacity:0;
+    z-index:1;
     transition: transform .35s cubic-bezier(.22,1,.36,1), filter .35s ease;
   }
   .icon .badge{ width:96px; height:96px; display:flex; align-items:center; justify-content:center;
@@ -111,6 +134,7 @@
     position:absolute; left:50%; top:50%;
     transform:translate(-50%,-50%);
     width:88%; text-align:center;
+    z-index:1;
   }
   .name{
     margin:0; font-weight:700; font-style:normal;
@@ -141,12 +165,44 @@
 
   .tagline{
     margin:14px 0 0; font-style:italic; font-weight:600;
-    font-size:clamp(12px,1.5vw,15px); color:#2b2b2b;
+    font-family:'SF Compact Display', 'SF Compact', system-ui, -apple-system, sans-serif;
+    font-size:clamp(22px, calc(1.5vw + 10px), 25px); color:#2b2b2b;
     opacity:0; animation: fadeSlide .6s ease-out 3.1s forwards;
   }
 
+  .scroll-indicator{
+    position:absolute;
+    left:50%; bottom:6%;
+    transform:translateX(-50%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    z-index:3;
+    opacity:0;
+    animation: fadeSlide .6s ease-out 3.35s forwards;
+  }
+  .scroll-text{
+    font-family:'Caveat', cursive;
+    font-weight:600;
+    font-style:italic;
+    font-size:16px;
+    color:#6a6a70;
+  }
+  .scroll-arrow{
+    width:20px;
+    height:34px;
+    animation: scrollBounce 1.6s ease-in-out infinite;
+  }
+  @keyframes scrollBounce{
+    0%, 100%{ transform:translateY(0); }
+    50%{ transform:translateY(8px); }
+  }
+
   @media (prefers-reduced-motion: reduce){
-    .icon,.tagline,.sweep,.handle{ animation:none !important; opacity:1 !important; width:100% !important; }
+    .icon,.tagline,.sweep,.handle,.scroll-indicator{ animation:none !important; opacity:1 !important; width:100% !important; }
+    .scroll-arrow{ animation:none !important; }
   }
 
   /* ===================== SELECTED PROJECTS SECTION ===================== */
@@ -161,7 +217,7 @@
   }
 
   .projects-heading{
-    margin-bottom:100px;
+    margin-bottom:40px;
   }
   .projects-heading .line{
     display:block;
@@ -549,6 +605,31 @@
     justify-content:center;
     background:#f2f2f4;
   }
+  .resume-image-wrap{
+    position:relative;
+    display:inline-block;
+  }
+  .resume-download-btn{
+    position:absolute;
+    top:12px;
+    right:12px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:40px;
+    height:40px;
+    padding:0;
+    color:#ffffff;
+    background:#111114;
+    border:none;
+    border-radius:50%;
+    cursor:pointer;
+    transition:transform .18s ease, background .18s ease, box-shadow .18s ease;
+    box-shadow:0 6px 18px rgba(0,0,0,.22);
+  }
+  .resume-download-btn:hover{ transform:translateY(-2px); background:#000000; box-shadow:0 10px 24px rgba(0,0,0,.28); }
+  .resume-download-btn:active{ transform:translateY(0); }
+  .resume-download-btn:disabled{ opacity:.6; cursor:progress; }
   .resume-image{
     width:100%;
     max-width:620px;
@@ -723,9 +804,15 @@
   .gallery-canvas{
     position:absolute;
     left:0; top:0;
-    width:1760px;
-    height:1180px;
     will-change:transform;
+  }
+  /* one repeatable block of posters; JS clones it into a 3x3 grid for
+     seamless infinite panning in every direction */
+  .gallery-tile{
+    position:absolute;
+    left:0; top:0;
+    width:1500px;
+    height:1250px;
   }
   .gallery-poster{
     position:absolute;
@@ -733,13 +820,90 @@
     border-radius:6px;
     box-shadow:0 16px 32px rgba(20,20,20,.2);
     overflow:hidden;
-    pointer-events:none;
+    pointer-events:auto;
+    cursor:pointer;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .gallery-poster:hover{
+    box-shadow:0 22px 44px rgba(20,20,20,.28);
   }
   .gallery-poster img{
     width:100%;
     height:100%;
     object-fit:cover;
     display:block;
+    pointer-events:none;
+    -webkit-user-drag:none;
+    user-select:none;
+  }
+  /* posters that should show the whole artwork instead of being cropped */
+  .gallery-poster.fit-contain img{
+    object-fit:contain;
+  }
+
+  /* little "drag to explore" hint pinned to the viewport */
+  .gallery-note{
+    position:absolute;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%);
+    z-index:5;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 16px;
+    border-radius:999px;
+    background:rgba(20,20,20,.72);
+    color:#fff;
+    font-family:'Caveat', cursive;
+    font-weight:600;
+    font-style:italic;
+    font-size:18px;
+    pointer-events:none;
+    box-shadow:0 8px 20px rgba(20,20,20,.25);
+    transition:opacity .4s ease;
+  }
+  .gallery-note.is-hidden{
+    opacity:0;
+  }
+
+  /* ===================== POSTER LIGHTBOX ===================== */
+  .poster-lightbox{
+    align-items:center;
+    justify-content:center;
+    z-index:1100;
+  }
+  .poster-lightbox img{
+    max-width:90vw;
+    max-height:86vh;
+    border-radius:8px;
+    box-shadow:0 30px 70px rgba(0,0,0,.5);
+    transform:scale(.94);
+    opacity:0;
+    transition:transform .35s cubic-bezier(.22,1,.36,1), opacity .3s ease;
+  }
+  .poster-lightbox.is-open img{
+    transform:scale(1);
+    opacity:1;
+  }
+  .poster-lightbox-close{
+    position:absolute;
+    top:22px; right:26px;
+    width:44px; height:44px;
+    border:none;
+    border-radius:50%;
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    font-size:26px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .2s ease;
+  }
+  .poster-lightbox-close:hover{
+    background:rgba(255,255,255,.28);
   }
 
   /* ===================== ABOUT OVERLAY ===================== */
@@ -987,32 +1151,19 @@
   .services-note{
     position:absolute;
     width:322px;
-    height:319px;
-    display:flex;
-    flex-direction:column;
     transform:rotate(-4deg);
-    background:var(--paper);
-    border-radius:10px;
-    box-shadow:0 20px 30px -12px rgba(20,20,20,.32);
-    overflow:hidden;
-    cursor:grab;
     user-select:none;
     z-index:3;
   }
-  .services-note.is-dragging{ cursor:grabbing; }
-  .services-note .note-bar{
-    flex:0 0 auto;
-    height:34px;
-    background:#f4b400;
-  }
-  .services-note .note-body{
-    flex:1 1 auto;
-    padding:18px 24px 26px;
-    font-family:'Caveat', cursive;
-    font-weight:600;
-    font-size:26px;
-    line-height:1.3;
-    color:#2b2b2b;
+  .services-note .note-img{
+    display:block;
+    width:100%;
+    height:auto;
+    pointer-events:none;
+    -webkit-user-drag:none;
+    filter:
+      drop-shadow(0 12px 20px rgba(20,20,20,.18))
+      drop-shadow(0 3px 7px rgba(20,20,20,.10));
   }
 
   @media (max-width:760px){
@@ -1346,6 +1497,8 @@
 
 <div class="hero" id="canvas">
 
+  <div class="grid-hover-cell" id="gridHoverCell"></div>
+
   <div class="icon icon--projects" data-name="projects">
     <div class="badge">
       <img src="icons/projects.png" alt="Projects">
@@ -1388,7 +1541,14 @@
       <span class="fill">LAVANYA PASRICHA</span>
       <span class="handle right"></span>
     </h1>
-    <p class="tagline">Designing experiences worth double-clicking.</p>
+    <p class="tagline">UI/UX designer• Intuitive by design. Meaningful by experience</p>
+  </div>
+
+  <div class="scroll-indicator" id="scrollIndicator" aria-hidden="true">
+    <span class="scroll-text">Scroll</span>
+    <svg class="scroll-arrow" viewBox="0 0 24 40" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2 L12 34 M4 26 L12 34 L20 26" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </div>
 
 </div>
@@ -1845,9 +2005,8 @@
 
       <div class="services-desc-box" id="servicesDescBox"></div>
 
-      <div class="services-note" id="servicesNote" style="right:2%; top:30px;">
-        <div class="note-bar"></div>
-        <div class="note-body" id="servicesNoteBody">A UI is like a joke. If you have to explain it, it's not that good.</div>
+      <div class="services-note" id="servicesNote" style="right:-10%; top:30px;">
+        <img src="note.png" alt="A UI is like a joke. If you have to explain it, it's not that good." class="note-img" draggable="false">
       </div>
     </div>
   </div>
@@ -1997,7 +2156,16 @@
       <div class="project-modal-close-spacer"></div>
     </div>
     <div class="project-modal-body resume-modal-body">
-      <img src="resume.png" alt="Lavanya Pasricha Resume" class="resume-image">
+      <div class="resume-image-wrap">
+        <img src="Resume.png" alt="Lavanya Pasricha Resume" class="resume-image" id="resumeImage">
+        <button type="button" class="resume-download-btn" id="resumeDownloadBtn" aria-label="Download resume as PDF" title="Download PDF">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -2017,31 +2185,46 @@
     <div class="project-modal-body gallery-modal-body">
       <div class="gallery-viewport" id="galleryViewport">
         <div class="gallery-canvas" id="galleryCanvas">
-          <div class="gallery-poster" style="left:60px; top:120px; width:340px; height:430px; transform:rotate(-2deg);">
-            <img src="gallery/poster-1.jpg" alt="Shree Ram Navami poster">
-          </div>
-          <div class="gallery-poster" style="left:440px; top:420px; width:230px; height:300px; transform:rotate(1.5deg);">
-            <img src="gallery/poster-2.jpg" alt="Ambedkar Jayanti poster">
-          </div>
-          <div class="gallery-poster" style="left:770px; top:100px; width:320px; height:420px; transform:rotate(-1deg);">
-            <img src="gallery/poster-3.jpg" alt="Ambedkar Jayanti poster">
-          </div>
-          <div class="gallery-poster" style="left:1190px; top:110px; width:210px; height:270px; transform:rotate(2deg);">
-            <img src="gallery/poster-4.jpg" alt="Ambedkar Jayanti poster grayscale">
-          </div>
-          <div class="gallery-poster" style="left:770px; top:560px; width:260px; height:340px; transform:rotate(1deg);">
-            <img src="gallery/poster-5.jpg" alt="Ambedkar Jayanti poster">
-          </div>
-          <div class="gallery-poster" style="left:1150px; top:430px; width:260px; height:340px; transform:rotate(-1.5deg);">
-            <img src="gallery/poster-6.jpg" alt="Ambedkar Jayanti poster">
-          </div>
-          <div class="gallery-poster" style="left:440px; top:760px; width:260px; height:340px; transform:rotate(2deg);">
-            <img src="gallery/poster-7.jpg" alt="Ambedkar Jayanti poster">
+          <div class="gallery-tile" id="galleryTile">
+            <div class="gallery-poster" style="left:60px; top:90px; width:300px; height:400px; transform:rotate(-2deg);">
+              <img src="p1.png" alt="Poster 1">
+            </div>
+            <div class="gallery-poster" style="left:430px; top:120px; width:240px; height:320px; transform:rotate(1.5deg);">
+              <img src="p2.png" alt="Poster 2">
+            </div>
+            <div class="gallery-poster fit-contain" style="left:720px; top:90px; width:400px; height:280px; transform:rotate(-1deg);">
+              <img src="p3.png" alt="Poster 3">
+            </div>
+            <div class="gallery-poster" style="left:1180px; top:110px; width:250px; height:330px; transform:rotate(2deg);">
+              <img src="p4.jpg" alt="Poster 4">
+            </div>
+            <div class="gallery-poster" style="left:720px; top:470px; width:380px; height:250px; transform:rotate(1deg);">
+              <img src="p5.png" alt="Poster 5">
+            </div>
+            <div class="gallery-poster" style="left:1160px; top:540px; width:260px; height:340px; transform:rotate(-1.5deg);">
+              <img src="p6.png" alt="Poster 6">
+            </div>
+            <div class="gallery-poster" style="left:400px; top:540px; width:300px; height:390px; transform:rotate(2deg);">
+              <img src="p7.png" alt="Poster 7">
+            </div>
+            <div class="gallery-poster fit-contain" style="left:60px; top:600px; width:300px; height:400px; transform:rotate(-1.5deg);">
+              <img src="p8.jpeg" alt="Poster 8">
+            </div>
+            <div class="gallery-poster fit-contain" style="left:760px; top:820px; width:340px; height:360px; transform:rotate(1.5deg);">
+              <img src="p9.png" alt="Poster 9">
+            </div>
           </div>
         </div>
+        <div class="gallery-note" id="galleryNote">✦ drag around to explore ✦</div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- ===================== POSTER LIGHTBOX ===================== -->
+<div class="project-overlay poster-lightbox" id="posterLightbox">
+  <button class="poster-lightbox-close" id="posterLightboxClose" aria-label="Close poster">&times;</button>
+  <img id="posterLightboxImg" src="" alt="">
 </div>
 
 <!-- ===================== ABOUT OVERLAY ===================== -->
@@ -2146,6 +2329,59 @@
     icon.addEventListener('mouseleave', () => { canvasEl.classList.remove('has-hover'); icon.classList.remove('is-active'); });
   });
 
+  // ---------- Grid pulse: fast in/out flash on the cell under the cursor ----------
+  (function initGridHover(){
+    const seedCell = document.getElementById('gridHoverCell');
+    if (!canvasEl || !seedCell) return;
+    const GRID_SIZE = 34;
+
+    // Pool a few cells so quick mouse movement produces overlapping pulses
+    // instead of one being cut off when the next cell is entered.
+    const POOL_SIZE = 4;
+    const pool = [seedCell];
+    for (let i = 1; i < POOL_SIZE; i++){
+      const el = seedCell.cloneNode(false);
+      el.removeAttribute('id');
+      canvasEl.appendChild(el);
+      pool.push(el);
+    }
+
+    let poolIndex = 0;
+    let lastCellX = null, lastCellY = null;
+    let pendingX = 0, pendingY = 0, ticking = false;
+
+    function fire(cellX, cellY){
+      if (cellX === lastCellX && cellY === lastCellY) return;
+      lastCellX = cellX;
+      lastCellY = cellY;
+
+      const el = pool[poolIndex];
+      poolIndex = (poolIndex + 1) % POOL_SIZE;
+
+      el.style.transform = `translate(${cellX}px, ${cellY}px)`;
+      el.classList.remove('is-pulsing');
+      void el.offsetWidth; // force reflow so the animation restarts
+      el.classList.add('is-pulsing');
+    }
+
+    canvasEl.addEventListener('mousemove', (e) => {
+      const rect = canvasEl.getBoundingClientRect();
+      pendingX = Math.floor((e.clientX - rect.left) / GRID_SIZE) * GRID_SIZE;
+      pendingY = Math.floor((e.clientY - rect.top) / GRID_SIZE) * GRID_SIZE;
+      if (!ticking){
+        ticking = true;
+        requestAnimationFrame(() => {
+          fire(pendingX, pendingY);
+          ticking = false;
+        });
+      }
+    }, { passive: true });
+
+    canvasEl.addEventListener('mouseleave', () => {
+      lastCellX = lastCellY = null;
+    });
+  })();
+
   // ---------- Fast scroll-to-section (used by the Projects icon) ----------
   function fastScrollTo(targetY, duration){
     const startY = window.scrollY;
@@ -2171,6 +2407,14 @@
     projectsIcon.addEventListener('click', () => {
       const targetY = projectsSection.getBoundingClientRect().top + window.scrollY;
       fastScrollTo(targetY, 450);
+    });
+  }
+
+  const scrollIndicator = document.getElementById('scrollIndicator');
+  if (scrollIndicator && projectsSection){
+    scrollIndicator.addEventListener('click', () => {
+      const targetY = projectsSection.getBoundingClientRect().top + window.scrollY;
+      fastScrollTo(targetY, 550);
     });
   }
 
@@ -2337,10 +2581,14 @@
     if (lastFocused) lastFocused.focus();
   }
 
-  document.querySelectorAll('.open-project-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const card = btn.closest('.project-card');
-      if (card) openProjectOverlay(card);
+  // Open the project when clicking anywhere on the card, not just the button.
+  // Clicks on the mac-style dots are ignored, and drags are already suppressed
+  // by the capture-phase click handler on the track above.
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.project-dots .dot')) return;
+      openProjectOverlay(card);
     });
   });
 
@@ -2379,6 +2627,70 @@
     if (e.target === resumeOverlay) closeResumeOverlay();
   });
 
+  // Convert resume.png to an A4 PDF and download it
+  const resumeDownloadBtn = document.getElementById('resumeDownloadBtn');
+
+  // Read a data URL for the PNG. Prefer fetch (clean PNG bytes, no canvas
+  // tainting); fall back to drawing the already-loaded <img> onto a canvas.
+  function fetchAsDataURL(src){
+    return fetch(src).then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.blob();
+    }).then(blob => new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onload = () => resolve(fr.result);
+      fr.onerror = reject;
+      fr.readAsDataURL(blob);
+    }));
+  }
+
+  function canvasDataURL(imgEl){
+    const canvas = document.createElement('canvas');
+    canvas.width = imgEl.naturalWidth;
+    canvas.height = imgEl.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgEl, 0, 0);
+    return canvas.toDataURL('image/png');
+  }
+
+  resumeDownloadBtn.addEventListener('click', async () => {
+    resumeDownloadBtn.disabled = true;
+    try {
+      if (!window.jspdf || !window.jspdf.jsPDF){
+        throw new Error('jsPDF library did not load');
+      }
+
+      const imgEl = document.getElementById('resumeImage');
+      let dataURL;
+      try {
+        dataURL = await fetchAsDataURL('Resume.png');
+      } catch (e) {
+        // fetch is blocked when the page is opened directly from disk (file://)
+        dataURL = canvasDataURL(imgEl);
+      }
+
+      const w = imgEl.naturalWidth || 210;
+      const h = imgEl.naturalHeight || 297;
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: w > h ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [w, h],
+        hotfixes: ['px_scaling']
+      });
+      pdf.addImage(dataURL, 'PNG', 0, 0, w, h);
+      pdf.save('Lavanya Pasricha Resume.pdf');
+    } catch (err) {
+      console.error('Could not generate PDF:', err);
+      alert('The resume could not be downloaded (' + err.message + '). '
+        + 'If you opened the page by double-clicking the file, run it through a '
+        + 'local server (e.g. VS Code Live Server) and try again.');
+    } finally {
+      resumeDownloadBtn.disabled = false;
+    }
+  });
+
   // ---------- Gallery overlay logic ----------
   const galleryOverlay = document.getElementById('galleryOverlay');
   const galleryCloseDot = document.getElementById('galleryCloseDot');
@@ -2406,53 +2718,95 @@
     if (e.target === galleryOverlay) closeGalleryOverlay();
   });
 
-  // ---------- Gallery: draggable pannable poster canvas ----------
+  // ---------- Gallery: infinite draggable poster canvas + click-to-open ----------
   (function initGalleryPan(){
-    if (!galleryViewport || !galleryCanvas) return;
+    const tile = document.getElementById('galleryTile');
+    const galleryNote = document.getElementById('galleryNote');
+    if (!galleryViewport || !galleryCanvas || !tile) return;
+
+    const TILE_W = 1500, TILE_H = 1250;
+
+    // Clone the single poster block into a 3x3 grid so the layout repeats
+    // seamlessly in every direction as the user drags.
+    for (let gy = 0; gy < 3; gy++){
+      for (let gx = 0; gx < 3; gx++){
+        const clone = tile.cloneNode(true);
+        clone.removeAttribute('id');
+        clone.style.left = ((gx - 1) * TILE_W) + 'px';
+        clone.style.top  = ((gy - 1) * TILE_H) + 'px';
+        galleryCanvas.appendChild(clone);
+      }
+    }
+    tile.remove(); // drop the original template so posters aren't doubled
+
+    const DRAG_SPEED = 1.6;  // canvas moves faster than the pointer
+    const FRICTION   = 0.94; // momentum decay per frame after release
 
     let panX = 0, panY = 0;
-    let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
-    let dragging = false;
+    let startX = 0, startY = 0;      // for click-vs-drag detection
+    let lastX = 0, lastY = 0;        // previous pointer position
+    let vx = 0, vy = 0;              // velocity for inertia
+    let dragging = false, moved = false;
     let activePointerId = null;
-    let minX = 0, minY = 0;
-
-    function clampPan(){
-      const viewportRect = galleryViewport.getBoundingClientRect();
-      minX = Math.min(0, viewportRect.width - galleryCanvas.offsetWidth);
-      minY = Math.min(0, viewportRect.height - galleryCanvas.offsetHeight);
-      panX = Math.min(0, Math.max(minX, panX));
-      panY = Math.min(0, Math.max(minY, panY));
-    }
+    let downPoster = null;
+    let momentumId = null;
 
     function applyPan(){
-      galleryCanvas.style.transform = `translate(${panX}px, ${panY}px)`;
+      // wrap the translation into one tile period → endless repeat in all directions
+      let wx = panX % TILE_W; if (wx > 0) wx -= TILE_W;
+      let wy = panY % TILE_H; if (wy > 0) wy -= TILE_H;
+      galleryCanvas.style.transform = `translate3d(${wx}px, ${wy}px, 0)`;
+    }
+    applyPan();
+
+    function stopMomentum(){
+      if (momentumId){ cancelAnimationFrame(momentumId); momentumId = null; }
     }
 
-    // center the canvas roughly on open
-    function centerCanvas(){
-      const viewportRect = galleryViewport.getBoundingClientRect();
-      panX = Math.round((viewportRect.width - galleryCanvas.offsetWidth) / 2);
-      panY = Math.round((viewportRect.height - galleryCanvas.offsetHeight) / 2);
-      clampPan();
+    function runMomentum(){
+      vx *= FRICTION;
+      vy *= FRICTION;
+      panX += vx;
+      panY += vy;
       applyPan();
+      if (Math.hypot(vx, vy) > 0.15){
+        momentumId = requestAnimationFrame(runMomentum);
+      } else {
+        momentumId = null;
+      }
     }
 
     galleryViewport.addEventListener('pointerdown', (e) => {
+      stopMomentum();
       dragging = true;
+      moved = false;
+      vx = 0; vy = 0;
       activePointerId = e.pointerId;
-      startX = e.clientX;
-      startY = e.clientY;
-      startPanX = panX;
-      startPanY = panY;
+      startX = lastX = e.clientX;
+      startY = lastY = e.clientY;
+      downPoster = e.target.closest('.gallery-poster');
       galleryViewport.classList.add('is-dragging');
       galleryViewport.setPointerCapture(e.pointerId);
     });
 
     galleryViewport.addEventListener('pointermove', (e) => {
       if (!dragging || e.pointerId !== activePointerId) return;
-      panX = startPanX + (e.clientX - startX);
-      panY = startPanY + (e.clientY - startY);
-      clampPan();
+      // incremental movement, scaled up for a faster/snappier drag
+      const stepX = (e.clientX - lastX) * DRAG_SPEED;
+      const stepY = (e.clientY - lastY) * DRAG_SPEED;
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      panX += stepX;
+      panY += stepY;
+      // remember the latest step as velocity for the release glide
+      vx = stepX;
+      vy = stepY;
+
+      if (!moved && Math.hypot(e.clientX - startX, e.clientY - startY) > 6){
+        moved = true;
+        if (galleryNote) galleryNote.classList.add('is-hidden');
+      }
       applyPan();
     });
 
@@ -2460,14 +2814,48 @@
       if (!dragging || e.pointerId !== activePointerId) return;
       dragging = false;
       galleryViewport.classList.remove('is-dragging');
+      // a press that didn't turn into a drag = a click → open that poster
+      if (!moved && downPoster){
+        const img = downPoster.querySelector('img');
+        if (img) openPosterLightbox(img.getAttribute('src'), img.getAttribute('alt'));
+      } else if (moved && Math.hypot(vx, vy) > 0.5){
+        // fling → keep gliding with inertia (still wraps, so it's endless)
+        stopMomentum();
+        momentumId = requestAnimationFrame(runMomentum);
+      }
+      downPoster = null;
     }
     galleryViewport.addEventListener('pointerup', endGalleryDrag);
     galleryViewport.addEventListener('pointercancel', endGalleryDrag);
 
-    // recenter whenever the gallery is opened / window resizes
-    if (galleryIcon) galleryIcon.addEventListener('click', () => setTimeout(centerCanvas, 0));
-    window.addEventListener('resize', () => { clampPan(); applyPan(); });
+    // reset the hint each time the gallery is opened
+    if (galleryIcon) galleryIcon.addEventListener('click', () => {
+      if (galleryNote) galleryNote.classList.remove('is-hidden');
+    });
   })();
+
+  // ---------- Poster lightbox (opens an individual poster) ----------
+  const posterLightbox = document.getElementById('posterLightbox');
+  const posterLightboxImg = document.getElementById('posterLightboxImg');
+  const posterLightboxClose = document.getElementById('posterLightboxClose');
+
+  function openPosterLightbox(src, alt){
+    if (!posterLightbox || !src) return;
+    posterLightboxImg.src = src;
+    posterLightboxImg.alt = alt || '';
+    posterLightbox.classList.add('is-open');
+    document.body.classList.add('overlay-lock');
+  }
+  function closePosterLightbox(){
+    if (!posterLightbox) return;
+    posterLightbox.classList.remove('is-open');
+    // keep the body locked because the gallery overlay underneath is still open
+    if (galleryOverlay.classList.contains('is-open')) document.body.classList.add('overlay-lock');
+  }
+  if (posterLightboxClose) posterLightboxClose.addEventListener('click', closePosterLightbox);
+  if (posterLightbox) posterLightbox.addEventListener('click', (e) => {
+    if (e.target === posterLightbox) closePosterLightbox();
+  });
 
   // ---------- About overlay logic ----------
   const aboutOverlay = document.getElementById('aboutOverlay');
@@ -2622,6 +3010,8 @@
   // Escape closes whichever overlay is currently open
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape'){
+      // a poster lightbox sits on top of the gallery — close it first
+      if (posterLightbox && posterLightbox.classList.contains('is-open')){ closePosterLightbox(); return; }
       if (overlay.classList.contains('is-open')) closeProjectOverlay();
       if (resumeOverlay.classList.contains('is-open')) closeResumeOverlay();
       if (galleryOverlay.classList.contains('is-open')) closeGalleryOverlay();
@@ -2665,42 +3055,6 @@
     positionDescBox(active);
   });
 
-  // draggable sticky note
-  const note = document.getElementById('servicesNote');
-  const layout = document.getElementById('servicesLayout');
-  let noteDragging = false, noteOffsetX = 0, noteOffsetY = 0;
-
-  note.addEventListener('pointerdown', (e) => {
-    const layoutRect = layout.getBoundingClientRect();
-    const noteRect = note.getBoundingClientRect();
-    // switch from right/top positioning to absolute left/top on first drag
-    note.style.right = 'auto';
-    note.style.left = (noteRect.left - layoutRect.left) + 'px';
-    note.style.top = (noteRect.top - layoutRect.top) + 'px';
-
-    noteDragging = true;
-    note.classList.add('is-dragging');
-    noteOffsetX = e.clientX - noteRect.left;
-    noteOffsetY = e.clientY - noteRect.top;
-    note.setPointerCapture(e.pointerId);
-  });
-
-  note.addEventListener('pointermove', (e) => {
-    if (!noteDragging) return;
-    const layoutRect = layout.getBoundingClientRect();
-    let x = e.clientX - layoutRect.left - noteOffsetX;
-    let y = e.clientY - layoutRect.top - noteOffsetY;
-    note.style.left = x + 'px';
-    note.style.top = y + 'px';
-  });
-
-  function endNoteDrag(){
-    noteDragging = false;
-    note.classList.remove('is-dragging');
-  }
-  note.addEventListener('pointerup', endNoteDrag);
-  note.addEventListener('pointercancel', endNoteDrag);
-
   // ---------- Quick Answers (FAQ) chat bubbles ----------
   const faqItems = Array.from(document.querySelectorAll('.faq-item'));
 
@@ -2740,6 +3094,9 @@
   }, { threshold: 0.35 });
   contactObserver.observe(contactSection);
 </script>
+
+<!-- jsPDF: used to convert the resume PNG into a downloadable PDF -->
+<script src="jspdf.umd.min.js"></script>
 
 </body>
 </html>
