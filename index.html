@@ -629,17 +629,14 @@
   }
   .resume-download-btn:hover{ transform:translateY(-2px); background:#000000; box-shadow:0 10px 24px rgba(0,0,0,.28); }
   .resume-download-btn:active{ transform:translateY(0); }
-  .resume-download-btn:disabled{ opacity:.6; cursor:progress; }
-  .resume-image{
-    width:100%;
-    max-width:620px;
-    aspect-ratio:210 / 297;
-    object-fit:contain;
+  .resume-frame{
     display:block;
+    width:min(82vw, 620px);
+    height:min(84vh, 877px); /* A4 ratio: 620 * 297/210 ≈ 877 */
+    border:none;
     border-radius:6px;
     background:#ffffff;
     box-shadow:0 12px 34px rgba(0,0,0,.14);
-    cursor:default;
   }
 
   @media (max-width: 640px){
@@ -2157,14 +2154,14 @@
     </div>
     <div class="project-modal-body resume-modal-body">
       <div class="resume-image-wrap">
-        <img src="Resume.png" alt="Lavanya Pasricha Resume" class="resume-image" id="resumeImage">
-        <button type="button" class="resume-download-btn" id="resumeDownloadBtn" aria-label="Download resume as PDF" title="Download PDF">
+        <iframe src="Lavanya-Pasricha-Resume.pdf#toolbar=0&navpanes=0&view=FitH" title="Lavanya Pasricha Resume" class="resume-frame"></iframe>
+        <a class="resume-download-btn" href="Lavanya-Pasricha-Resume.pdf" download="Lavanya Pasricha Resume.pdf" aria-label="Download resume as PDF" title="Download PDF">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
-        </button>
+        </a>
       </div>
     </div>
   </div>
@@ -2656,70 +2653,8 @@
   resumeOverlay.addEventListener('click', (e) => {
     if (e.target === resumeOverlay) closeResumeOverlay();
   });
-
-  // Convert resume.png to an A4 PDF and download it
-  const resumeDownloadBtn = document.getElementById('resumeDownloadBtn');
-
-  // Read a data URL for the PNG. Prefer fetch (clean PNG bytes, no canvas
-  // tainting); fall back to drawing the already-loaded <img> onto a canvas.
-  function fetchAsDataURL(src){
-    return fetch(src).then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.blob();
-    }).then(blob => new Promise((resolve, reject) => {
-      const fr = new FileReader();
-      fr.onload = () => resolve(fr.result);
-      fr.onerror = reject;
-      fr.readAsDataURL(blob);
-    }));
-  }
-
-  function canvasDataURL(imgEl){
-    const canvas = document.createElement('canvas');
-    canvas.width = imgEl.naturalWidth;
-    canvas.height = imgEl.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imgEl, 0, 0);
-    return canvas.toDataURL('image/png');
-  }
-
-  resumeDownloadBtn.addEventListener('click', async () => {
-    resumeDownloadBtn.disabled = true;
-    try {
-      if (!window.jspdf || !window.jspdf.jsPDF){
-        throw new Error('jsPDF library did not load');
-      }
-
-      const imgEl = document.getElementById('resumeImage');
-      let dataURL;
-      try {
-        dataURL = await fetchAsDataURL('Resume.png');
-      } catch (e) {
-        // fetch is blocked when the page is opened directly from disk (file://)
-        dataURL = canvasDataURL(imgEl);
-      }
-
-      const w = imgEl.naturalWidth || 210;
-      const h = imgEl.naturalHeight || 297;
-
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({
-        orientation: w > h ? 'landscape' : 'portrait',
-        unit: 'px',
-        format: [w, h],
-        hotfixes: ['px_scaling']
-      });
-      pdf.addImage(dataURL, 'PNG', 0, 0, w, h);
-      pdf.save('Lavanya Pasricha Resume.pdf');
-    } catch (err) {
-      console.error('Could not generate PDF:', err);
-      alert('The resume could not be downloaded (' + err.message + '). '
-        + 'If you opened the page by double-clicking the file, run it through a '
-        + 'local server (e.g. VS Code Live Server) and try again.');
-    } finally {
-      resumeDownloadBtn.disabled = false;
-    }
-  });
+  // The resume is now a real PDF embedded in an <iframe>, so its hyperlinks are
+  // clickable and the download button is a plain <a download> — no JS needed.
 
   // ---------- Gallery overlay logic ----------
   const galleryOverlay = document.getElementById('galleryOverlay');
@@ -3125,8 +3060,6 @@
   contactObserver.observe(contactSection);
 </script>
 
-<!-- jsPDF: used to convert the resume PNG into a downloadable PDF -->
-<script src="jspdf.umd.min.js"></script>
 
 </body>
 </html>
