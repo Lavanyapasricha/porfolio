@@ -1971,7 +1971,7 @@
   <div class="container">
     <div class="services-heading">
       <svg class="services-spark" viewBox="0 0 40 40"><path d="M20 4 L20 14 M8 12 L15 18 M32 12 L25 18" /></svg>
-      <span class="line">SERVICES</span>
+      <span class="line">SKILLS</span>
     </div>
 
     <div class="services-layout" id="servicesLayout">
@@ -2431,9 +2431,39 @@
   let lastTimestamp = null;
   const AUTO_SCROLL_MS_PER_SET = 36000; // same pace as the original 36s animation
 
+  // The HTML ships with 2 identical card sets. On wide screens two sets aren't
+  // wide enough, so the loop wraps into empty space and a blank gap flashes at
+  // the seam. Clone the first set until the track is comfortably wider than the
+  // viewport, then treat exactly ONE set (including its trailing gap) as the
+  // loop period so the wrap is perfectly seamless.
+  const GAP = 40;              // keep in sync with .projects-track { gap:40px }
+  const cardsPerSet = 3;
+  const masterCards = Array.from(track.querySelectorAll('.project-card')).slice(0, cardsPerSet);
+
+  function ensureEnoughSets(){
+    if (!masterCards.length) return;
+    const wrapperWidth = trackWrapper.getBoundingClientRect().width || window.innerWidth;
+    let setWidth = GAP * cardsPerSet; // card widths + one gap each (incl. the seam gap)
+    masterCards.forEach(c => { setWidth += c.getBoundingClientRect().width; });
+    if (setWidth <= 0) return;
+    // need total content >= viewport + one set so the seam never exposes a gap
+    const setsNeeded = Math.max(2, Math.ceil((wrapperWidth + setWidth) / setWidth) + 1);
+    let currentSets = Math.round(track.querySelectorAll('.project-card').length / cardsPerSet);
+    for (; currentSets < setsNeeded; currentSets++){
+      masterCards.forEach(card => {
+        const clone = card.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+      });
+    }
+  }
+
   function measureTrack(){
-    // the track holds two identical copies of the card set back-to-back
-    singleSetWidth = track.scrollWidth / 2;
+    ensureEnoughSets();
+    const cards = track.querySelectorAll('.project-card');
+    singleSetWidth = cards.length > cardsPerSet
+      ? cards[cardsPerSet].offsetLeft - cards[0].offsetLeft // exact one-set period, incl. gap
+      : track.scrollWidth / 2;
   }
   window.addEventListener('load', measureTrack);
   window.addEventListener('resize', measureTrack);
@@ -2584,12 +2614,12 @@
   // Open the project when clicking anywhere on the card, not just the button.
   // Clicks on the mac-style dots are ignored, and drags are already suppressed
   // by the capture-phase click handler on the track above.
-  document.querySelectorAll('.project-card').forEach(card => {
-    card.style.cursor = 'pointer';
-    card.addEventListener('click', (e) => {
-      if (e.target.closest('.project-dots .dot')) return;
-      openProjectOverlay(card);
-    });
+  // Delegated on the track so dynamically cloned loop cards open correctly too.
+  track.style.cursor = 'pointer';
+  track.addEventListener('click', (e) => {
+    if (e.target.closest('.project-dots .dot')) return;
+    const card = e.target.closest('.project-card');
+    if (card) openProjectOverlay(card);
   });
 
   closeDot.addEventListener('click', closeProjectOverlay);
